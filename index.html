@@ -132,15 +132,32 @@
             };
 
             const sendWhatsApp = (type) => {
-                const activeItems = inventory.filter(i => i.qty > 0);
-                if (activeItems.length === 0) return alert("No hay artículos con cantidad para reportar.");
+                let title = "";
+                let text = "";
+                let itemsToReport = [];
+
+                if (type === 'conteo') {
+                    // Reporte Completo: Todos los items
+                    title = '*CONTEO DE INVENTARIO COMPLETO*';
+                    itemsToReport = inventory; 
+                } else {
+                    // Reporte de Corrección: Solo los que tienen cantidad > 0
+                    title = '*CORRECCIÓN DE INVENTARIO*';
+                    itemsToReport = inventory.filter(i => i.qty > 0);
+                }
+
+                if (itemsToReport.length === 0) return alert("No hay artículos para reportar.");
+
+                text = `${title}\n_Generado: ${new Date().toLocaleTimeString()}_\n\n`;
                 
-                let title = type === 'conteo' ? '*CONTEO DE INVENTARIO*' : '*CORRECCIÓN DE INVENTARIO*';
-                let text = `${title}\n_Generado: ${new Date().toLocaleTimeString()}_\n\n`;
-                
-                activeItems.forEach(i => {
+                itemsToReport.forEach(i => {
                     text += `*${i.code}* - ${i.desc}: *${i.qty}* ${i.unit}\n`;
                 });
+                
+                const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                window.open(url, '_blank');
+                setShowShareOptions(false);
+            };
                 
                 const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
                 window.open(url, '_blank');
