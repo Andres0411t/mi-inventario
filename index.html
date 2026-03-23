@@ -119,7 +119,11 @@
             };
 
             const handleOverwrite = (code) => {
-                const val = parseFloat(inputs[code] || 0);
+                const rawValue = inputs[code];
+                // Si el input está vacío, no hace nada
+                if (rawValue === undefined || rawValue === '') return;
+                
+                const val = parseFloat(rawValue);
                 if (confirm(`¿Actualizar total a ${val}?`)) {
                     setInventory(prev => prev.map(item => 
                         item.code === code ? { ...item, qty: val } : item
@@ -180,7 +184,6 @@
 
             return (
                 <div className="max-w-xl mx-auto min-h-screen pb-10 flex flex-col relative">
-                    {/* Modal de selección de reporte */}
                     {showShareOptions && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
                             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowShareOptions(false)}></div>
