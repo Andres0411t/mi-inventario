@@ -120,7 +120,7 @@
 
             const handleOverwrite = (code) => {
                 const rawValue = inputs[code];
-                // Si el input está vacío, no hace nada
+                
                 if (rawValue === undefined || rawValue === '') return;
                 
                 const val = parseFloat(rawValue);
@@ -200,12 +200,7 @@
                                         onClick={() => sendWhatsApp('reconteo')}
                                         className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold active:scale-95 transition-all"
                                     >
-                                        RECONTEO
-                                    </button>
-                                    <button 
-                                        onClick={() => setShowShareOptions(false)}
-                                        className="w-full py-2 text-slate-400 font-bold text-sm"
-                                    >
+                                        
                                         Cancelar
                                     </button>
                                 </div>
