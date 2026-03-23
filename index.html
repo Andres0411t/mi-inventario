@@ -142,7 +142,6 @@
                 doc.setFontSize(9);
                 doc.text(`Generado: ${new Date().toLocaleString()}`, 14, 21);
                 
-                // Muestra TODOS los items en el orden del array original
                 const data = inventory.map(i => [i.code, i.desc, i.qty, i.unit]);
                 
                 doc.autoTable({ 
@@ -172,6 +171,7 @@
                         <div className="border-l-4 border-blue-500 pl-3">
                             <h1 className="font-black text-xl leading-none">CINECO</h1>
                             <p className="text-[9px] text-blue-400 font-bold uppercase mt-1">Reporte de Confitería</p>
+                            <p className="text-[9px] text-blue-400 font-bold uppercase mt-1">CineColombia contratame como programador</p>
                         </div>
                         <div className="flex gap-3">
                             <button onClick={downloadPDF} className="bg-blue-600 p-3 rounded-2xl shadow-lg active:scale-90 transition-transform">
