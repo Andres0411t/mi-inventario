@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario Pro - Gestión de Turno</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        const INVENTORY_DB = [
+            { code: '37006', desc: 'ACEITE PARA CRISPETAS', unit: 'LITRO' },
+            { code: '37160', desc: 'BABY JOHNNY 48', unit: 'UNIDAD' },
+            { code: '30616', desc: 'BAG IN BOX JUGO HIT MANGO 12 LT', unit: 'UNIDAD' },
+            { code: '30615', desc: 'BAG IN BOX JUGO HIT MORA 12 LT', unit: 'UNIDAD' },
+            { code: '30629', desc: 'BAG IN BOX KOLA ROMAN ZERO 5 LT', unit: 'UNIDAD' },
+            { code: '35031', desc: 'BAG IN BOX 5L', unit: 'UNIDAD' },
+            { code: '34022', desc: 'BALDE 130 OZ', unit: 'UNIDAD' },
+            { code: '34021', desc: 'BALDE 170 OZ', unit: 'UNIDAD' },
+            { code: '31473', desc: 'BALDE 85 OZ', unit: 'UNIDAD' },
+            { code: '31455', desc: 'BIB BRISA MANZANA 5LT', unit: 'UNIDAD' },
+            { code: '35030', desc: 'BIB COCA COLA 17L', unit: 'UNIDAD' },
+            { code: '35150', desc: 'BIB POSTOBON 10L', unit: 'UNIDAD' },
+            { code: '35141', desc: 'BIB POSTOBON 18L', unit: 'UNIDAD' },
+            { code: '34515', desc: 'BIB TE FUZE', unit: 'UNIDAD' },
+            { code: '37608', desc: 'BOLSA DE QUESO CHEDDAR', unit: 'UNIDAD' },
+            { code: '30331', desc: 'BOLSA KRAFT MEDIANA', unit: 'UNIDAD' },
+            { code: '34060', desc: 'BOLSA SANDWICH', unit: 'UNIDAD' },
+            { code: '34438', desc: 'CAJA CINE COMBITO', unit: 'UNIDAD' },
+            { code: '34070', desc: 'CAJA PORTA PERRO', unit: 'UNIDAD' },
+            { code: '37811', desc: 'CARAMELO', unit: 'UNIDAD' },
+            { code: '37169', desc: 'CHOCOLATINA JET 25G', unit: 'UNIDAD' },
+            { code: '35010', desc: 'CONFIT AGUA MANANTIAL PET 600 ML', unit: 'UNIDAD' },
+            { code: '3590', desc: 'CONFITERIA BRISA LIMA LIMON PET 600 ML', unit: 'UNIDAD' },
+            { code: '30589', desc: 'CONFITERIA BRISA MANZANA PET 600 ML', unit: 'UNIDAD' },
+            { code: '31441', desc: 'CONFITERIA PITILLO PLA 7.2X26', unit: 'UNIDAD' },
+            { code: '34252', desc: 'CONFITERIA TAPA VASO 22 OZ', unit: 'UNIDAD' },
+            { code: '34253', desc: 'CONFITERIA TAPA VASO 32 OZ', unit: 'UNIDAD' },
+            { code: '34254', desc: 'CONFITERIA TAPA VASO 44 OZ', unit: 'UNIDAD' },
+            { code: '34291', desc: 'CONFITERIA VASO GASEOSA GRANDE 44 OZ', unit: 'UNIDAD' },
+            { code: '34293', desc: 'CONFITERIA VASO GASEOSA PEQUEÑO 22 OZ', unit: 'UNIDAD' },
+            { code: '34292', desc: 'CONFITERIA VASO GASEOSA MEDIANO 32 OZ', unit: 'UNIDAD' },
+            { code: '30996', desc: 'CONTENEDORES 6 OZ CONFITERIA', unit: 'UNIDAD' },
+            { code: '37202', desc: 'FLAVACOL', unit: 'UNIDAD' },
+            { code: '30986', desc: 'GALLETA OREO TRITURADO', unit: 'KG' },
+            { code: '30957', desc: 'GALLETA RAMO 60G', unit: 'UNIDAD' },
+            { code: '37648', desc: 'GALON MAYONESA', unit: 'GL' },
+            { code: '37642', desc: 'GALON MOSTAZA', unit: 'GL' },
+            { code: '37643', desc: 'GALON TOMATE', unit: 'GL' },
+            { code: '30597', desc: 'GOMAS GUSANOS ACIDOS 100G', unit: 'UNIDAD' },
+            { code: '30598', desc: 'GOMAS TRULULU SABORES 100G', unit: 'UNIDAD' },
+            { code: '32348', desc: 'HIELOS COCA COLA', unit: 'UNIDAD' },
+            { code: '37400', desc: 'MAIZ PIRA', unit: 'KG' },
+            { code: '37491', desc: 'PAN PERRO', unit: 'UNIDAD' },
+            { code: '37492', desc: 'PAN SANDWICH', unit: 'UNIDAD' },
+            { code: '30455', desc: 'PAPA RIPIO KRUMERCHIPS CONFITERIA', unit: 'UNIDAD' },
+            { code: '30648', desc: 'PAQUETE GALLETAS OREO 54G', unit: 'UNIDAD' },
+            { code: '37454', desc: 'PAQUETE NACHOS 60G', unit: 'UNIDAD' },
+            { code: '37630', desc: 'SAL', unit: 'KG' },
+            { code: '37646', desc: 'SALCHICHA CINECO', unit: 'UNIDAD' },
+            { code: '37641', desc: 'SALSA DE PIÑA', unit: 'UNIDAD' },
+            { code: '34402', desc: 'SALSERA QUESO NACHOS CONFITERIA', unit: 'UNIDAD' },
+            { code: '34477', desc: 'SEPARADOR BALDE 120', unit: 'UNIDAD' },
+            { code: '34476', desc: 'SEPARADOR BALDE 150', unit: 'UNIDAD' },
+            { code: '34478', desc: 'SEPARADOR BALDE 85 OZ', unit: 'UNIDAD' },
+            { code: '34240', desc: 'SERVILLETA SCOTT CAFETERIA BLANCA KIMBERLY', unit: 'UNIDAD' },
+            { code: '30333', desc: 'STICKER DE SEGURIDAD', unit: 'UNIDAD' },
+            { code: '34336', desc: 'STICKERS BOL SANDWICH', unit: 'UNIDAD' },
+            { code: '37320', desc: 'TAJADA JAMON PIETRAN', unit: 'UNIDAD' },
+            { code: '38709', desc: 'TAJADA QUESO MOZARELLA', unit: 'UNIDAD' },
+            { code: '37614', desc: 'TAJADA QUESO SABANA', unit: 'UNIDAD' },
+            { code: '30327', desc: 'TAPA CRISPETA MEDIANA 130 OZ', unit: 'UNIDAD' },
+            { code: '30387', desc: 'TAPA SALSERA 4 ONZAS', unit: 'UNIDAD' },
+            { code: '30649', desc: 'VASO GASEOSA NUFASA', unit: 'UNIDAD' },
+            { code: '34051', desc: 'BOLSA PLASTICA', unit: 'UNIDAD' },
+            { code: '30460', desc: 'CAJA CRISPETA PLATINO', unit: 'UNIDAD' },
+            { code: '34110', desc: 'GUANTES DESECHABLES', unit: 'UNIDAD' }
+        ];
+
+        function App() {
+            const [inventory, setInventory] = useState([]);
+            const [inputs, setInputs] = useState({});
+            const [search, setSearch] = useState("");
+
+            useEffect(() => {
+                const saved = localStorage.getItem('inv_data_cine');
+                if (saved) {
+                    setInventory(JSON.parse(saved));
+                } else {
+                    setInventory(INVENTORY_DB.map(i => ({ ...i, qty: 0 })));
+                }
+            }, []);
+
+            useEffect(() => {
+                if (inventory.length > 0) localStorage.setItem('inv_data_cine', JSON.stringify(inventory));
+            }, [inventory]);
+
+            const handleAdd = (code) => {
+                const val = parseFloat(inputs[code] || 0);
+                if (val <= 0) return;
+                setInventory(prev => prev.map(item => 
+                    item.code === code ? { ...item, qty: parseFloat((item.qty + val).toFixed(2)) } : item
+                ));
+                setInputs(prev => ({ ...prev, [code]: '' }));
+            };
+
+            const resetData = () => {
+                if (confirm("¿Reiniciar todo el conteo a cero?")) {
+                    setInventory(INVENTORY_DB.map(i => ({ ...i, qty: 0 })));
+                }
+            };
+
+            const downloadPDF = () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.text("Reporte de Inventario de Turno", 14, 15);
+                const data = inventory.filter(i => i.qty > 0).map(i => [i.code, i.desc, i.qty, i.unit]);
+                doc.autoTable({ head: [['Cód', 'Producto', 'Cant', 'Und']], body: data, startY: 20 });
+                doc.save(`Inventario_${new Date().toLocaleDateString()}.pdf`);
+            };
+
+            const filtered = inventory.filter(i => 
+                i.desc.toLowerCase().includes(search.toLowerCase()) || i.code.includes(search)
+            );
+
+            return (
+                <div className="max-w-xl mx-auto min-h-screen flex flex-col">
+                    <header className="bg-slate-900 text-white p-4 sticky top-0 z-20 shadow-lg flex justify-between items-center">
+                        <h1 className="font-bold text-lg">Inventario Cine</h1>
+                        <div className="flex gap-2">
+                            <button
