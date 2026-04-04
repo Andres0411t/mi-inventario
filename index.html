@@ -268,17 +268,18 @@
 
     /* ── Error celular ── */
     .field input.input-error {
-      border: 1.5px solid var(--orquidea);
+      border: 1.5px solid #e0004d;
       background: var(--white);
     }
     .field-error-msg {
       display: none;
       font-size: 0.85rem;
       font-weight: 500;
-      color: var(--orquidea);
+      color: #e0004d;
       margin-top: -2px;
       margin-bottom: 2px;
       padding-left: 2px;
+      white-space: nowrap;
     }
     .field-error-msg.visible { display: block; }
   </style>
@@ -476,7 +477,7 @@
     const errEl = document.getElementById('errorCel');
 
     // Mostrar error solo si cel2 tiene algo escrito y no coincide con cel1
-    const mismatch = c2.length > 0 && c1 !== c2;
+    const mismatch = c2.length === 10 && c1 !== c2;
     inp2.classList.toggle('input-error', mismatch);
     errEl.classList.toggle('visible', mismatch);
 
