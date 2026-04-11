@@ -299,6 +299,114 @@ table {
 <style type="text/css">
 
 </style>
+<style type="text/css">
+@media only screen and (max-width: 768px) {
+
+  /* Contenedor general: dejar de ser fijo en 1024px */
+  .contenedorGeneral {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Header y sus bloques internos */
+  .header {
+    width: 100% !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .contenedorLogo {
+    width: 100% !important;
+    height: auto !important;
+    float: none !important;
+    padding: 20px 0 !important;
+  }
+
+  .contenedorBanner {
+    width: 100% !important;
+    height: auto !important;
+    float: none !important;
+    display: none !important; /* Ocultar banner en móvil para no romper layout */
+  }
+
+  .logoHeader {
+    margin: 10px auto 10px !important;
+  }
+
+  /* Tabla principal que divide login (izquierda) y contenido (derecha) */
+  table[width="100%"] > tbody > tr {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  table[width="100%"] > tbody > tr > td {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* La columna del login (td con width fija de 278px) */
+  td[style*="width: 278px"] {
+    width: 100% !important;
+    position: static !important;
+  }
+
+  /* Caja de login centrada */
+  #cntr_login {
+    width: 90% !important;
+    max-width: 320px !important;
+    margin: 20px auto !important;
+    box-sizing: border-box !important;
+    display: block !important;
+  }
+
+  /* El input de identificación centrado */
+  #cntr_login input.fld {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 5px auto !important;
+    display: block !important;
+  }
+
+  #cntr_login table {
+    width: 100% !important;
+  }
+
+  #cntr_login table td {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Botón Entrar centrado */
+  .form-submit {
+    display: block !important;
+    margin: 10px auto !important;
+  }
+
+  /* Contenedor de texto informativo PSE */
+  #s_node {
+    width: 100% !important;
+  }
+
+  .n-content2, .n-filler {
+    width: 100% !important;
+  }
+
+  /* Tabla de teléfonos por ciudad */
+  table[cellspacing="5"][width="405"] {
+    width: 100% !important;
+  }
+
+  /* Contenedor blanco de contenido */
+  .contenedor {
+    padding: 10px !important;
+  }
+}
+</style>
 
 
 <style data-savepage-href="./archivos/dhtmlwindow.css" type="text/css">* {
